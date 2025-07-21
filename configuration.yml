@@ -1,0 +1,108 @@
+###This yaml file contains the hyperparameters of the system
+
+roach_ip: "10.17.89.228"
+boffile: "fpg_files/arte_timestamp.fpg" #"arte_headers2.fpg" #Usually we use arte_timestap.fpg now we are doing test to measure with only one antenna, so we are working with arte_one_channel.fpg.
+
+##Powersupply info (RIGOL)
+supply_ip: "10.17.89.233"
+
+#
+cal_info:
+  calibrate: True         #if calibrate at the initizalization
+  #gen_info: 'TCPIP::10.17.89.229::INSTR' #Generator used for the OGP and INL calibration
+  gen_freq: 10
+  gen_power: -10
+  plot_spect: False #This is normally False, except when performing a calibration
+  plot_snap: False #This is normally False, except when performing a calibration
+  do_ogp: False #This is normally False, except when performing a calibration
+  do_mmcm: True
+  do_inl: False #This is normally False, except when performing a calibration
+
+
+sync_info:
+  sync_adcs: False        #if synchronize the ADCs at initizalization
+  gen_info: "TCPIP::192.168.1.34::INSTR"
+  gen_power: -8
+  points: 32
+
+
+##Dedispersor info
+DMs: [45,90,135,180,225,270,315,360,405,450,495]
+thresholds: [0.436708016, #0.436708016
+0.6676518628, #0.6676518628
+0.9875294706, #0.9875294706
+1.187271561, #1.187271561
+1.292855731, #1.292855731
+1.716129532, #1.716129532
+1.970380338, #1.970380338
+2.226127656, #2.226127656
+2.639672604, #2.639672604
+2.948153317, #2.948153317
+3.166285449] #3.166285449
+
+#[0.22034862053885101, #0.436708016
+#0.47419230300761206, #0.6676518628
+#0.6387031656561817, #0.9875294706
+#0.7033368416103863, #1.187271561
+#0.8564752217732761, #1.292855731
+#1.1021449829662753, #1.716129532
+#0.8593363770297829, #1.970380338
+#0.9177729007016765, #2.226127656
+#0.5887623494333615, #2.639672604
+#0.6419021505738306, #2.948153317
+#0.8205032423095127] #3.166285449
+
+
+
+#10Gbe logging
+tengbe_log:
+  interface: "enp2s0"
+  ip: "192.168.2.10"
+  port: 1234
+  filetime: 5               ##minutes
+  log_folder: '/media/arte/BACKUP ARTE/Julio_2025/21_07_2025' ##where save the data
+  #log_folder: '/media/arte/26_11_2024'
+  totaltime:  null  ##total time to save in minutes
+  log_time: 10              ##time between 2 spectras (ms)     #THIS HAS TO BE 10 FOR ARTE
+  calibration_time: 2       ##seconds
+  temp: False               ##To save the temperature
+  temp_time: 30             ##time between two temperature measures
+
+#RFI detecction accumulation length
+rfi_acc_len: 1024
+rfi_threshold: 0.4         ##this number goes (0-1)
+rfi_holding_time: 0.5       ##RFI flag last this amount of seconds to be cleaned
+
+##ring buffer parameters:
+dram_dump: False
+dram_gain: 32                ##this is the initial guess, then an iterative process
+                            ##must be used to obtain the right value
+dram_socket:
+  ip: "10.0.0.29"
+  port: 1234
+  interface: "enp4s0"
+ 
+dram_frames: 10             ##frames to read per request
+
+###need to found an easy way to put the flags somewhere..
+
+
+####harcoded parameters
+fpga_clock: 150             ##MHz
+start_freq: 1200            ##starting frequency in MHz
+bandwidth: 600              ##MHz
+channels: 2048
+
+
+##offline processing stuffs
+log_info:
+  read_folder: '/media/arte/BACKUP ARTE/Julio_2025/21_07_2025/plots'
+  #read_folder: '/media/arte/26_11_2024/plots'
+  img_folder: "images"
+  log_per_img: 1
+  plot_misc: False
+  plot_clip: False
+  decimation: 15
+  mov_avg_size: 15
+  tails: 32
+  substract_median: True
