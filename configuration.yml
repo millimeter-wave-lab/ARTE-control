@@ -1,7 +1,7 @@
 ###This yaml file contains the hyperparameters of the system
 
 roach_ip: "10.17.89.228"
-boffile: "fpg_files/arte_timestamp.fpg" #"arte_headers2.fpg" #Usually we use arte_timestap.fpg now we are doing test to measure with only one antenna, so we are working with arte_one_channel.fpg.
+boffile: "fpg_files/arte_timestamp.fpg" #"arte_headers2.fpg" #ROACH model's, usually arte_timestamp.fpg'
 
 ##Powersupply info (RIGOL)
 supply_ip: "10.17.89.233"
@@ -60,12 +60,11 @@ tengbe_log:
   ip: "192.168.2.10"
   port: 1234
   filetime: 5               ##minutes
-  log_folder: '/media/arte/BACKUP ARTE/Julio_2025/21_07_2025' ##where save the data
-  #log_folder: '/media/arte/26_11_2024'
+  log_folder: '/media/arte/BACKUP ARTE/Julio_2025/22_07_2025' ## where save the data
   totaltime:  null  ##total time to save in minutes
-  log_time: 10              ##time between 2 spectras (ms)     #THIS HAS TO BE 10 FOR ARTE
+  log_time: 10              ##time between 2 spectras (ms) 
   calibration_time: 2       ##seconds
-  temp: False               ##To save the temperature
+  temp: False               ##to save the temperature
   temp_time: 30             ##time between two temperature measures
 
 #RFI detecction accumulation length
@@ -96,8 +95,7 @@ channels: 2048
 
 ##offline processing stuffs
 log_info:
-  read_folder: '/media/arte/BACKUP ARTE/Julio_2025/21_07_2025/plots'
-  #read_folder: '/media/arte/26_11_2024/plots'
+  read_folder: '/media/arte/BACKUP ARTE/Julio_2025/22_07_2025/plots'
   img_folder: "images"
   log_per_img: 1
   plot_misc: False

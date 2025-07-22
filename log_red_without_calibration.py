@@ -207,7 +207,7 @@ def get_image_data_temperature(filenames,cal_time=1,spect_time=1e-2,file_time=5 
         aux = np.mean(aux.astype(float), axis=1)
 
         data[i*(spect_size//decimation):(i+1)*(spect_size//decimation),flags] = aux[:,flags]
-        #data = data[100:,:] 
+        data = data[100:,:] 
         print(np.shape(data))
 
         mediana = (np.nanmedian(data[:,:],axis=0))
