@@ -60,7 +60,7 @@ tengbe_log:
   ip: "192.168.2.10"
   port: 1234
   filetime: 5               ##minutes
-  log_folder: '/media/arte/BACKUP ARTE/Julio_2025/22_07_2025' ## where save the data
+  log_folder: '/media/arte/BACKUP ARTE/Julio_2025/25_07_2025' ## where save the data
   totaltime:  null  ##total time to save in minutes
   log_time: 10              ##time between 2 spectras (ms) 
   calibration_time: 2       ##seconds
@@ -95,7 +95,7 @@ channels: 2048
 
 ##offline processing stuffs
 log_info:
-  read_folder: '/media/arte/BACKUP ARTE/Julio_2025/22_07_2025/plots'
+  read_folder: '/media/arte/BACKUP ARTE/Julio_2025/25_07_2025/plots'
   img_folder: "images"
   log_per_img: 1
   plot_misc: False
