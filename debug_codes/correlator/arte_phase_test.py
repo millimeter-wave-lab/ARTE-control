@@ -5,17 +5,18 @@ import time, corr
 from calandigital.instruments import generator
 import sys
 
-boffile = 'corr4in_arte.gz'
-roach_ip = '192.168.0.168'
-genname = 'TCPIP::192.168.0.33::INSTR'
+boffile = 'corr4in_arte.fpg'
+roach_ip = '10.17.89.228'
+genname = 'TCPIP::10.17.89.229::INSTR'
 bw = 600
 channels = 2048
 
-gen_power = -90
+gen_power = -30
 
 
 corr01_re_bram = ['dout_0a0c_re0','dout_0a0c_re1', 'dout_0a0c_re2', 'dout_0a0c_re3']
 corr01_im_bram = ['dout_0a0c_im0','dout_0a0c_im1', 'dout_0a0c_im2', 'dout_0a0c_im3']
+
 corr02_re_bram = ['dout_0a1a_re0','dout_0a1a_re1', 'dout_0a1a_re2', 'dout_0a1a_re3']
 corr02_im_bram = ['dout_0a1a_im0','dout_0a1a_im1', 'dout_0a1a_im2', 'dout_0a1a_im3']
 corr03_re_bram = ['dout_0a1c_re0','dout_0a1c_re1', 'dout_0a1c_re2', 'dout_0a1c_re3']
@@ -34,13 +35,13 @@ pows = [pow0,pow1,pow2,pow3]
 ##
 roach = corr.katcp_wrapper.FpgaClient(roach_ip)
 time.sleep(0.5)
-#roach.upload_program_bof(boffile, 3000)
-time.sleep(0.5)
+roach.upload_program_bof(boffile, port=3000, timeout=10)
+time.sleep(5)
 roach.write_int('acc_len', 1024)
 roach.write_int('cnt_rst',1)
 roach.write_int('cnt_rst',0)
 
-#roach.write_int('diode',1)
+roach.write_int('diode',0) # para tener el sw por la entrada que me sirve (1 fuente de ruido)
 
 def get_power():
     power_data = np.zeros((4,2048))
@@ -56,8 +57,7 @@ def get_correlation():
         corr_im = calan.read_interleave_data(roach, bram_im[i], 9, 64, '>q')
         corr_data[i,:] = corr_re+1j*corr_im
     return corr_data
-
-
+    
 ####
 gen_info = {'type':'visa', 'connection':genname, 'def_freq':1000, 'def_power':gen_power}
 gen = generator.create_generator(gen_info)
@@ -78,6 +78,7 @@ else:
 
 for i in range(len(freq)):
     print(i)
+    print(freq[i])
     gen.set_freq_mhz(freq[i])
     time.sleep(0.5)
     powers[:,:,i] = get_power()
@@ -87,7 +88,8 @@ for i in range(len(freq)):
     
 gen.turn_output_off()
 
-np.savez('arte_data.npz',
+#90 degrees is the zenith
+np.savez('arte_data_phase_test.npz',
          powers = powers,
          correlations = correlations,
          data = data
