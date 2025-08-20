@@ -123,7 +123,7 @@ def get_misc_data(misc_filename, dm_acq, roach_ip, DMs,i, run, dram_dump):
             if(det!=0):
                 detections.append([det, ex_time])
                 roach_control.reset_detection_flag()
-        #rfi_data.append(utils.get_rfi_score(roach))
+        rfi_data.append(utils.get_rfi_score(roach))
         antennas_data.append(utils.get_antenas(roach))
     print('saving misc: %i'%i)
     np.savez(misc_filename,
@@ -150,16 +150,16 @@ def get_misc_data(misc_filename, dm_acq, roach_ip, DMs,i, run, dram_dump):
              mov_avg9=dm_acq.mov_avg[9],
              mov_avg10=dm_acq.mov_avg[10],
              detections=detections,
-             #rfi_data = rfi_data,
+             rfi_data = rfi_data,
              antennas = antennas_data
          )
     roach.stop()
 
 
 def receive_10gbe_data(folder, file_time,total_time=None,ip_addr='192.168.2.10',
-        port=1234, roach_ip='192.168.0.168', DMs = [45,90,135,180,225,270,315,360,405,450,495],
+        port=1234, roach_ip='10.17.89.228', DMs = [45,90,135,180,225,270,315,360,405,450,495],
         dram_dump=False,dram_addr=('10.0.0.29',1234), dram_frames=10,cal_time=1, temp=True, 
-        temp_time=30, rigol_ip='192.168.0.38',noise_params=[2,28,1]):
+        temp_time=30, rigol_ip='10.17.89.233',noise_params=[2,28,1],first_amp_params=[1,3,0.354], lna_params=[3,5,1.2]):
     """
     Function to save the 10gbe data in a certain folder, like we dont want a
     super huge file we write several of them with the cpu timestamp.
@@ -169,9 +169,10 @@ def receive_10gbe_data(folder, file_time,total_time=None,ip_addr='192.168.2.10',
     ip_addr     :   10gbe address
     port        :   10gbe port
     noise_params: [channel, voltage, current]
+    first_amp_params: [channel, voltage, current]
+    lna_params: [channel, voltage, current]
     """
-
-    
+            
     roach = corr.katcp_wrapper.FpgaClient(roach_ip)
     roach_control = control.roach_control(roach)
     time.sleep(1)
@@ -182,6 +183,22 @@ def receive_10gbe_data(folder, file_time,total_time=None,ip_addr='192.168.2.10',
     rigol = rigol_dp832(rigol_ip)
     rigol.set_voltage(noise_params[0], noise_params[1])
     rigol.set_current(noise_params[0], noise_params[2])
+            
+    rigol.set_voltage(first_amp_params[0], first_amp_params[1])
+    rigol.set_current(first_amp_params[0], first_amp_params[2])
+
+    rigol.set_voltage(lna_params[0], lna_params[1])
+    rigol.set_current(lna_params[0], lna_params[2])
+
+    rigol.turn_output_on(first_amp_params[0])
+    #if(not rigol.get_status(first_amp_params[0])):
+            #raise Exception('Channel %i doesnt turn on!'%first_amp_params[2])
+    #time.sleep(cal_time//2)
+
+    rigol.turn_output_on(lna_params[0])
+    #if(not rigol.get_status(lna_params[0])):
+            #raise Exception('Channel %i doesnt turn on!'%lna_params[2])
+    #time.sleep(cal_time//2)
 
     #create the folder if it doesnt exists
     if(not os.path.exists(folder)):
@@ -197,6 +214,7 @@ def receive_10gbe_data(folder, file_time,total_time=None,ip_addr='192.168.2.10',
     
     ##make file to store the timestamps of the calibrations
     cal_file = open(os.path.join(folder, 'calibrations'), 'a')
+    #rigol_file = open(os.path.join(folder, 'logger_rigol'), 'a')
     sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     sock.bind((ip_addr, port))
     
@@ -236,14 +254,15 @@ def receive_10gbe_data(folder, file_time,total_time=None,ip_addr='192.168.2.10',
         #hot measure
         rigol.turn_output_on(noise_params[0])
         roach_control.enable_diode()
-        if(not rigol.get_status(noise_params[0])):
-            raise Exception('Channel %i doesnt turn on!'%noise_params[2])
+        
+        #if(not rigol.get_status(noise_params[0])):
+        #    raise Exception('Channel %i doesnt turn on!'%noise_params[2])
         time.sleep(cal_time//2)
 
         #cold measure
         rigol.turn_output_off(noise_params[0])
-        if(rigol.get_status(noise_params[0])):
-            raise Exception('Channel %i doesnt turn off!'%noise_params[2])
+        #if(rigol.get_status(noise_params[0])):
+        #    raise Exception('Channel %i doesnt turn off!'%noise_params[2])
         time.sleep(cal_time//2)
         roach_control.disable_diode()
         
